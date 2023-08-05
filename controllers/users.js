@@ -2,7 +2,8 @@ const userModel = require('../models/user');
 const { serverErr, notFound, badRequest } = require('../utils/constants');
 
 const getUsers = (req, res) => {
-  userModel.find({})
+  userModel
+    .find({})
     .then((users) => {
       res.send(users);
     })
@@ -12,7 +13,8 @@ const getUsers = (req, res) => {
 };
 
 const getUserId = (req, res) => {
-  userModel.findById(req.params.userId)
+  userModel
+    .findById(req.params.userId)
     .then((users) => {
       if (!users) {
         Promise.reject();
@@ -31,7 +33,8 @@ const getUserId = (req, res) => {
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  userModel.create({ name, about, avatar })
+  userModel
+    .create({ name, about, avatar })
     .then((newUser) => {
       res.send(newUser);
     })
@@ -48,7 +51,8 @@ const updateMeProfile = (req, res) => {
   const { _id: id } = req.user;
   const { name, about } = req.body;
 
-  userModel.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
+  userModel
+    .findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
     .then((newUser) => {
       if (!newUser) {
         Promise.reject();
@@ -70,7 +74,8 @@ const updateMeAvatar = (req, res) => {
   const { _id: id } = req.user;
   const { avatar } = req.body;
 
-  userModel.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
+  userModel
+    .findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
     .then((newUser) => {
       if (!newUser) {
         Promise.reject();
