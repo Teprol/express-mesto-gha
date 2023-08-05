@@ -10,7 +10,7 @@ const getCards = (req, res) => {
       res.send(cards);
     })
     .catch(() => {
-      res.status(serverErr).send({ message: 'Ошибка на сервере' });
+      res.status(serverErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 

@@ -9,7 +9,7 @@ const getUsers = (req, res) => {
       res.send(users);
     })
     .catch(() => {
-      res.status(serverErr).send({ message: 'Ошибка на сервере' });
+      res.status(serverErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
