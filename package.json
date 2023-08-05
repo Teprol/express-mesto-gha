@@ -9,7 +9,7 @@
     "lint": "npx eslint .",
     "start-bd": "mongod"
   },
-  "author": "",
+  "author": "Sergey Bobrov",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.46.0",
