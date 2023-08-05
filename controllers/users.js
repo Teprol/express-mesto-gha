@@ -23,6 +23,8 @@ const getUserId = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
+        res.status(badRequest).send({ message: 'Введены некоректные данные' });
+      } else if (err.name === 'ValidationError') {
         res.status(notFound).send({ message: 'Такого пользователя нет' });
       } else {
         res.status(serverErr).send({ message: 'Ошибка на сервере' });
