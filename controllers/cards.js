@@ -22,20 +22,7 @@ const createCard = (req, res, next) => {
   cardModel
     .create({ name, link, owner: _id })
     .then((card) => {
-      cardModel
-        .findById(card._id)
-        .orFail()
-        .populate('owner')
-        .then((cardById) => {
-          res.send(cardById);
-        })
-        .catch((err) => {
-          if (err instanceof mongoose.Error.DocumentNotFoundError) {
-            next(new NotFoundError('Карточка с указанным id не найдена'));
-          } else {
-            next(err);
-          }
-        });
+      res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -49,9 +36,10 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   cardModel.findById(req.params.cardId)
     .orFail()
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
-        next(new RightsError('Вы не можете удалять чужие карточки'));
+        return next(new RightsError('Вы не можете удалять чужие карточки'));
       }
       cardModel
         .findByIdAndRemove(req.params.cardId)

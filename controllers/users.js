@@ -20,15 +20,15 @@ const getUsers = (req, res, next) => {
 
 const getUserId = (req, res, next) => {
   userModel.findById(req.params.userId)
-    .orFail()
+    .orFail(() => new NotFoundError('Пользователь с указанным id не найден'))
     .then((user) => {
       res.send(user);
     })
     .catch((error) => {
       if (error instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Некорректный id'));
-      } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFoundError('Пользователь с указанным id не найден'));
+        // } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
+        //   next(new NotFoundError('Пользователь с указанным id не найден'));
       } else {
         next(error);
       }
@@ -40,9 +40,9 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  if (!email || !password) {
-    next(new BadRequestError('Пароль и почта не могут быть пустыми'));
-  }
+  // if (!email || !password) {
+  //   next(new BadRequestError('Пароль и почта не могут быть пустыми'));
+  // }
 
   bcrypt.hash(password, 10).then((hash) => {
     userModel

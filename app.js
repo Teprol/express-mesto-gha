@@ -28,6 +28,11 @@ app.use('/', authRout);
 // роут авторизация
 app.use(auth);
 
+// роут выхода из ака и удаления куки
+// app.get('/signout', (req, res) => {
+//   res.clearCookie('jwt').send({ message: 'Выход' });
+// });
+
 app.use('/users', usersRout);
 app.use('/cards', cardsRout);
 app.use('/*', (req, res, next) => {
