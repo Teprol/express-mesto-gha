@@ -20,11 +20,13 @@ mongoose.connect(dbUrl, {
   useNewUrlParser: true,
 });
 
-//! парсер для куки, они теперь доступны в заголовках req.cookies
+// парсер для куки, они теперь доступны в заголовках req.cookies
 app.use(cookieParser());
 // app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// роуты регестрации
 app.use('/', authRout);
+// роут авторизация
 app.use(auth);
 app.use('/users', usersRout);
 app.use('/cards', cardsRout);
