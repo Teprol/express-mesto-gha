@@ -1,9 +1,9 @@
-const { badRequest } = require('../utils/constants');
+const { rightsErr } = require('../utils/constants');
 
 class RightsError extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = badRequest;
+    this.statusCode = rightsErr;
   }
 }
 

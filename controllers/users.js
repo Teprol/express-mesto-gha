@@ -125,7 +125,7 @@ const login = (req, res, next) => {
       // res.send({ token });
 
       // передача в куки токена
-      res.cookie('jwt', token, {
+      return res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: true,
