@@ -1,8 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const cookieParser = require('cookie-parser');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { err } = require('celebrate');
 const usersRout = require('./routes/users');
 const cardsRout = require('./routes/cards');
-const { notFound } = require('./utils/constants');
+const authRout = require('./routes/auth');
+const auth = require('./middlewares/auth');
+const errHandller = require('./middlewares/errHandller');
+// eslint-disable-next-line import/no-unresolved, import/extensions
+const { NotFoundError } = require('../errors/NotFoundError');
 
 const app = express();
 
@@ -12,23 +20,19 @@ mongoose.connect(dbUrl, {
   useNewUrlParser: true,
 });
 
+//! парсер для куки, они теперь доступны в заголовках req.cookies
+app.use(cookieParser());
 // app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64cacaea8e92546f088c08e6',
-  };
-
-  next();
-});
-
+app.use('/', authRout);
+app.use(auth);
 app.use('/users', usersRout);
 app.use('/cards', cardsRout);
-app.use('/*', (req, res) => {
-  res.status(notFound).json({
-    message: 'Страница не найдена',
-  });
+app.use('/*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
+// центр. обработка ошибок
+app.use(err());
+app.use(errHandller);
 
 app.listen(PORT);

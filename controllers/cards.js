@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
 const cardModel = require('../models/card');
-const { serverErr, notFound, badRequest } = require('../utils/constants');
+// const { serverErr, notFound, badRequest } = require('../utils/constants');
+const { BadRequestError } = require('../errors/BadRequestError');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { RightsError } = require('../errors/RightsError');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   cardModel
     .find({})
     .populate(['owner', 'likes'])
     .then((cards) => {
       res.send(cards);
     })
-    .catch(() => {
-      res.status(serverErr).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const { _id } = req.user;
 
@@ -30,48 +31,54 @@ const createCard = (req, res) => {
         })
         .catch((err) => {
           if (err instanceof mongoose.Error.DocumentNotFoundError) {
-            res
-              .status(notFound)
-              .send({ message: 'Карточка с указанным id не найдена' });
+            next(new NotFoundError('Карточка с указанным id не найдена'));
           } else {
-            res
-              .status(serverErr)
-              .send({ message: 'На сервере произошла ошибка' });
+            next(err);
           }
         });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(badRequest)
-          .send({
-            message: 'Переданы некорректные данные при создании карточки',
-          });
+        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
       } else {
-        res.status(serverErr).send({ message: 'На сервере произошла ошибка' });
+        next(err);
       }
     });
 };
 
-const deleteCard = (req, res) => {
-  cardModel
-    .findByIdAndRemove(req.params.cardId)
+const deleteCard = (req, res, next) => {
+  cardModel.findById(req.params.cardId)
     .orFail()
-    .then(() => {
-      res.send({ message: 'Карточка удалена' });
+    .then((card) => {
+      if (!card.owner.equals(req.user._id)) {
+        next(new RightsError('Вы не можете удалять чужие карточки'));
+      }
+      cardModel
+        .findByIdAndRemove(req.params.cardId)
+        .orFail()
+        .then(() => {
+          res.send({ message: 'Карточка удалена' });
+        })
+        .catch((err) => {
+          if (err instanceof mongoose.Error.CastError) {
+            next(new BadRequestError('Некорректный id'));
+          } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+            next(new NotFoundError('Карточка с указанным id не найдена'));
+          } else {
+            next(err);
+          }
+        });
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        res.status(badRequest).send({ message: 'Некорректный id' });
-      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        res.status(notFound).send({ message: 'Карточка с указанным id не найдена' });
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundError('Карточка с указанным id не найдена'));
       } else {
-        res.status(serverErr).send({ message: 'На сервере произошла ошибка' });
+        next(err);
       }
     });
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   cardModel
     .findByIdAndUpdate(
       req.params.cardId,
@@ -84,16 +91,16 @@ const likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(badRequest).send({ message: 'Некорректный id' });
+        next(new BadRequestError('Некорректный id'));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        res.status(notFound).send({ message: 'Карточка с указанным id не найдена' });
+        next(new NotFoundError('Карточка с указанным id не найдена'));
       } else {
-        res.status(serverErr).send({ message: 'На сервере произошла ошибка' });
+        next(err);
       }
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   cardModel
     .findByIdAndUpdate(
       req.params.cardId,
@@ -106,11 +113,11 @@ const dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(badRequest).send({ message: 'Некорректный id' });
+        next(new BadRequestError('Некорректный id'));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        res.status(notFound).send({ message: 'Карточка с указанным id не найдена' });
+        next(new NotFoundError('Карточка с указанным id не найдена'));
       } else {
-        res.status(serverErr).send({ message: 'На сервере произошла ошибка' });
+        next(err);
       }
     });
 };
