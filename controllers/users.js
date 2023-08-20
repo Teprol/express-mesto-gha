@@ -7,7 +7,7 @@ const userModel = require('../models/user');
 // const { serverErr, notFound, badRequest } = require('../utils/constants');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const RightsError = require('../errors/RightsError');
+const DataAlready = require('../errors/RightsError');
 
 const getUsers = (req, res, next) => {
   userModel
@@ -63,7 +63,7 @@ const createUser = (req, res, next) => {
         if (err instanceof mongoose.Error.ValidationError) {
           next(new BadRequestError('Переданы некоректные данные при создании пользователя'));
         } else if (err.code === 11000) {
-          next(new RightsError('Пользователь с таким email уже зарегистрирован'));
+          next(new DataAlready('Пользователь с таким email уже зарегистрирован'));
         }
         next(err);
       });
@@ -129,8 +129,7 @@ const login = (req, res, next) => {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: true,
-      })
-        .end();
+      });
       return res.send({ token });
     })
     .catch(next);
