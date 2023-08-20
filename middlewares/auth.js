@@ -1,11 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require('jsonwebtoken');
-const { NoAuthError } = require('../errors/NoAuthError');
+const NoAuthError = require('../errors/NoAuthError');
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
   const token = req.cookies.jwt;
-  // const { authorization } = req.headers;
 
   if (!token) {
     throw next(new NoAuthError('Необходима авторизация'));

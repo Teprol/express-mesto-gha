@@ -9,7 +9,7 @@ const cardsRout = require('./routes/cards');
 const authRout = require('./routes/auth');
 const auth = require('./middlewares/auth');
 const errHandller = require('./middlewares/errHandller');
-const { NotFoundError } = require('./errors/NotFoundError');
+const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
 
@@ -27,6 +27,7 @@ app.use(express.json());
 app.use('/', authRout);
 // роут авторизация
 app.use(auth);
+
 app.use('/users', usersRout);
 app.use('/cards', cardsRout);
 app.use('/*', (req, res, next) => {

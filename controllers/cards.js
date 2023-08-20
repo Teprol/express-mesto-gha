@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const cardModel = require('../models/card');
 // const { serverErr, notFound, badRequest } = require('../utils/constants');
-const { BadRequestError } = require('../errors/BadRequestError');
-const { NotFoundError } = require('../errors/NotFoundError');
-const { RightsError } = require('../errors/RightsError');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
+const RightsError = require('../errors/RightsError');
 
 const getCards = (req, res, next) => {
   cardModel

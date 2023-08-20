@@ -5,9 +5,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
 // const { serverErr, notFound, badRequest } = require('../utils/constants');
-const { BadRequestError } = require('../errors/BadRequestError');
-const { NotFoundError } = require('../errors/NotFoundError');
-const { RightsError } = require('../errors/RightsError');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
+const RightsError = require('../errors/RightsError');
 
 const getUsers = (req, res, next) => {
   userModel
@@ -19,19 +19,18 @@ const getUsers = (req, res, next) => {
 };
 
 const getUserId = (req, res, next) => {
-  userModel
-    .findById(req.params.userId)
+  userModel.findById(req.params.userId)
     .orFail()
-    .then((users) => {
-      res.send(users);
+    .then((user) => {
+      res.send(user);
     })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+    .catch((error) => {
+      if (error instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Некорректный id'));
-      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
         next(new NotFoundError('Пользователь с указанным id не найден'));
       } else {
-        next(err);
+        next(error);
       }
     });
 };
