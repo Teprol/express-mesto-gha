@@ -7,7 +7,7 @@ const userModel = require('../models/user');
 // const { serverErr, notFound, badRequest } = require('../utils/constants');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const DataAlready = require('../errors/RightsError');
+const DataAlready = require('../errors/DataAlready');
 
 const getUsers = (req, res, next) => {
   userModel
