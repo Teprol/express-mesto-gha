@@ -125,12 +125,13 @@ const login = (req, res, next) => {
       // res.send({ token });
 
       // передача в куки токена
-      return res.cookie('jwt', token, {
+      res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: true,
       })
         .end();
+      return res.send({ token });
     })
     .catch(next);
 };

@@ -1,9 +1,9 @@
-const { rightsErr } = require('../utils/constants');
+const { dataAlready } = require('../utils/constants');
 
 class RightsError extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = rightsErr;
+    this.statusCode = dataAlready;
   }
 }
 
